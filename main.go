@@ -11,6 +11,11 @@ type User struct {
 	age       int
 }
 
+func (user *User) setName(name string) {
+	user.firstName = name
+} // method belongs to user struct
+// call it by user.setName(newName)
+
 func main() {
 	var variable string = "hello world !!!"
 	var username string

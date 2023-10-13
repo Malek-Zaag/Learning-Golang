@@ -1,7 +1,7 @@
 init:
 	git init
 	git remote add origin https://github.com/Malek-Zaag/golang-simple-microservice.git
-git:
+commit:
 	git add . 
 	git commit -m "$(msg)"
 	git push -u origin main
