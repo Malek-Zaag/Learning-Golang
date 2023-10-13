@@ -1,6 +1,6 @@
 build: 
-	@go build -o bin/built
+	@go build -o bin/app
 run: build
-	@./bin/built
+	@./bin/app
 test:
 	@go tst -v./..
