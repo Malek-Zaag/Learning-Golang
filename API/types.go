@@ -1,9 +1,13 @@
 package main
 
-import "database/sql"
+import (
+	"database/sql"
+	"fmt"
+)
 
 type Storage interface {
 	CreateUser(*User) error
+	GetUsers() ([]*User, error)
 }
 
 type PostgresStore struct {
@@ -41,4 +45,26 @@ func (s *PostgresStore) CreateUser(user *User) error {
 		return err
 	}
 	return nil
+}
+
+func (s *PostgresStore) GetUsers() (users []*User, err error) {
+	query := `select * from users`
+	rows, err := s.db.Query(
+		query,
+	)
+	defer rows.Close()
+	users = []*User{}
+	for rows.Next() {
+		user := new(User)
+		err := rows.Scan(&user.FirstName, &user.LastName, &user.Email, &user.Password, nil)
+		_ = err
+		fmt.Println(rows.Columns())
+		fmt.Println(rows)
+		fmt.Println(user)
+		users = append(users, user)
+	}
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
 }
