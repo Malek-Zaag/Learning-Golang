@@ -13,22 +13,6 @@ import (
 
 var db *sql.DB
 
-func initDB() {
-	var err error
-	connStr := "postgres://admin:admin@localhost/postgres?sslmode=disable"
-	db, err = sql.Open("postgres", connStr)
-
-	if err != nil {
-		panic(err)
-	}
-
-	if err = db.Ping(); err != nil {
-		panic(err)
-	}
-	// this will be printed in the terminal, confirming the connection to the database
-	fmt.Println("The database is connected")
-}
-
 func (s *APIServer) Run() {
 	router := mux.NewRouter()
 	router.HandleFunc("/", s.handleGetAccount)

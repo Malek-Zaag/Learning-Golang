@@ -1,8 +1,15 @@
 package main
 
-func NewAPIServer(listenAddr string) *APIServer {
+import (
+	"database/sql"
+
+	_ "github.com/lib/pq"
+)
+
+func NewAPIServer(listenAddr string, store Storage) *APIServer {
 	return &APIServer{
 		listenAddr: listenAddr,
+		store:      store,
 	}
 }
 
@@ -22,4 +29,20 @@ func NewUser(firstname string, lastname string, email string, password string) (
 		Email:     email,
 		Password:  password,
 	}, nil
+}
+
+func NewPostgresStore() (*PostgresStore, error) {
+	connStr := "postgres://admin:admin@localhost/postgres?sslmode=disable"
+	db, err := sql.Open("postgres", connStr)
+
+	if err != nil {
+		panic(err)
+	}
+
+	if err = db.Ping(); err != nil {
+		panic(err)
+	}
+	return &PostgresStore{
+		db: db,
+	}, err
 }
