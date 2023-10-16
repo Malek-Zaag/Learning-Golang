@@ -17,7 +17,7 @@ func (s *APIServer) Run() {
 	router := mux.NewRouter()
 	router.HandleFunc("/create", s.handleCreateUser)
 	router.HandleFunc("/users", s.handleGetUsers)
-	router.HandleFunc("/user", s.handleGetUserByEmail)
+	router.HandleFunc("/user", WithJwt(s.handleGetUserByEmail))
 	log.Println("JSON API server running on port:", s.listenAddr[1:])
 	http.ListenAndServe(s.listenAddr, router)
 }
@@ -70,4 +70,9 @@ func WriteRequest(w http.ResponseWriter, status int, v any) error {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(status)
 	return json.NewEncoder(w).Encode(v)
+}
+
+func WithJwt(fn func(http.ResponseWriter, *http.Request)) func(http.ResponseWriter, *http.Request) {
+	fmt.Println("jwt handler")
+	return new(fn)
 }
