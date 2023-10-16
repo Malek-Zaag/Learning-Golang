@@ -8,6 +8,7 @@ import (
 type Storage interface {
 	CreateUser(*User) error
 	GetUsers() ([]*User, error)
+	GetUserByEmail(string) (*User, error)
 }
 
 type PostgresStore struct {
@@ -67,4 +68,21 @@ func (s *PostgresStore) GetUsers() (users []*User, err error) {
 		return nil, err
 	}
 	return users, nil
+}
+
+func (s *PostgresStore) GetUserByEmail(email string) (*User, error) {
+	rows, err := s.db.Query("select * from users where email = $1", email)
+	defer rows.Close()
+	user := new(User)
+	for rows.Next() {
+		err := rows.Scan(&user.FirstName, &user.LastName, &user.Email, &user.Password)
+		_ = err
+	}
+	if err != nil {
+		return nil, fmt.Errorf("user with email = %s not found", email)
+	}
+	fmt.Println(rows.Columns())
+	fmt.Println(rows)
+
+	return user, nil
 }

@@ -17,6 +17,7 @@ func (s *APIServer) Run() {
 	router := mux.NewRouter()
 	router.HandleFunc("/create", s.handleCreateUser)
 	router.HandleFunc("/users", s.handleGetUsers)
+	router.HandleFunc("/user", s.handleGetUserByEmail)
 	log.Println("JSON API server running on port:", s.listenAddr[1:])
 	http.ListenAndServe(s.listenAddr, router)
 }
@@ -50,7 +51,21 @@ func (s *APIServer) handleGetUsers(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func handleGetUserByEmail(w http.ResponseWriter, r *http.Request) {}
+func (s *APIServer) handleGetUserByEmail(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		// email := mux.Vars(r)["email"]
+		email := r.URL.Query().Get("email")
+		user, err := s.store.GetUserByEmail(email)
+		_ = err
+		resp := WriteRequest(w, http.StatusOK, user)
+		fmt.Println(resp)
+
+	} else {
+		log.Panicln("method not supported")
+		fmt.Errorf("method not supported")
+	}
+
+}
 
 func WriteRequest(w http.ResponseWriter, status int, v any) error {
 	w.Header().Add("Content-Type", "application/json")
