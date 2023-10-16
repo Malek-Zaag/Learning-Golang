@@ -53,36 +53,37 @@ func (s *PostgresStore) GetUsers() (users []*User, err error) {
 	rows, err := s.db.Query(
 		query,
 	)
+	if err != nil {
+		return nil, err
+	}
 	defer rows.Close()
 	users = []*User{}
 	for rows.Next() {
 		user := new(User)
 		err := rows.Scan(&user.FirstName, &user.LastName, &user.Email, &user.Password, nil)
-		_ = err
-		fmt.Println(rows.Columns())
-		fmt.Println(rows)
-		fmt.Println(user)
+		if err != nil {
+			return nil, err
+		}
 		users = append(users, user)
-	}
-	if err != nil {
-		return nil, err
 	}
 	return users, nil
 }
 
 func (s *PostgresStore) GetUserByEmail(email string) (*User, error) {
 	rows, err := s.db.Query("select * from users where email = $1", email)
+	if err != nil {
+		return nil, err
+	}
 	defer rows.Close()
 	user := new(User)
 	for rows.Next() {
 		err := rows.Scan(&user.FirstName, &user.LastName, &user.Email, &user.Password)
-		_ = err
+		if err != nil {
+			return nil, err
+		} else {
+			return user, nil
+		}
 	}
-	if err != nil {
-		return nil, fmt.Errorf("user with email = %s not found", email)
-	}
-	fmt.Println(rows.Columns())
-	fmt.Println(rows)
+	return nil, fmt.Errorf("user with email = %s not found", email)
 
-	return user, nil
 }

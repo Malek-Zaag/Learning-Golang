@@ -58,8 +58,7 @@ func (s *APIServer) handleGetUserByEmail(w http.ResponseWriter, r *http.Request)
 		user, err := s.store.GetUserByEmail(email)
 		_ = err
 		resp := WriteRequest(w, http.StatusOK, user)
-		fmt.Println(resp)
-
+		_ = resp
 	} else {
 		log.Panicln("method not supported")
 		fmt.Errorf("method not supported")
